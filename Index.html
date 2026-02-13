@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>A Question for You 💕</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Montserrat:wght@300;400&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background: linear-gradient(135deg, #ffeef8 0%, #fff5f0 50%, #ffe8f0 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Floating hearts animation */
+        .heart-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+        
+        .heart {
+            position: absolute;
+            font-size: 20px;
+            opacity: 0;
+            animation: float-heart 8s infinite ease-in-out;
+        }
+        
+        @keyframes float-heart {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: translateY(-20vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .heart:nth-child(1) { left: 10%; animation-delay: 0s; animation-duration: 9s; }
+        .heart:nth-child(2) { left: 25%; animation-delay: 2s; animation-duration: 11s; }
+        .heart:nth-child(3) { left: 40%; animation-delay: 4s; animation-duration: 8s; }
+        .heart:nth-child(4) { left: 60%; animation-delay: 1s; animation-duration: 10s; }
+        .heart:nth-child(5) { left: 75%; animation-delay: 3s; animation-duration: 9s; }
+        .heart:nth-child(6) { left: 85%; animation-delay: 5s; animation-duration: 12s; }
+        
+        /* Main content */
+        .container {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        .quote-container {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 40px 30px;
+            max-width: 90%;
+            box-shadow: 
+                0 10px 40px rgba(255, 182, 193, 0.3),
+                0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            margin-bottom: 40px;
+            animation: fade-in 1s ease-out;
+        }
+        
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .quote {
+            font-size: 20px;
+            line-height: 1.8;
+            color: #4a2c2a;
+            font-weight: 300;
+            font-style: italic;
+            letter-spacing: 0.3px;
+        }
+        
+        .signature {
+            margin-top: 25px;
+            font-size: 18px;
+            font-weight: 400;
+            color: #d4526e;
+            font-style: normal;
+        }
+        
+        .button-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            height: 200px;
+            margin: 0 auto;
+        }
+        
+        button {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 18px;
+            font-weight: 400;
+            padding: 18px 50px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            letter-spacing: 0.5px;
+        }
+        
+        #yesBtn {
+            background: linear-gradient(135deg, #ff6b9d 0%, #c9466c 100%);
+            color: white;
+            position: relative;
+            z-index: 20;
+            margin-bottom: 15px;
+        }
+        
+        #yesBtn:active {
+            transform: scale(0.95);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        #noBtn {
+            background: rgba(255, 255, 255, 0.9);
+            color: #888;
+            border: 2px solid #ddd;
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: all 0.15s ease-out;
+        }
+        
+        #noBtn:active {
+            transform: translateX(-50%) scale(0.95);
+        }
+        
+        .success-message {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 40px 30px;
+            max-width: 90%;
+            box-shadow: 0 15px 50px rgba(255, 182, 193, 0.4);
+            animation: pop-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            text-align: center;
+        }
+        
+        @keyframes pop-in {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .success-message h2 {
+            font-size: 32px;
+            color: #d4526e;
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+        
+        .success-message p {
+            font-size: 20px;
+            color: #4a2c2a;
+            line-height: 1.6;
+            font-style: italic;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 380px) {
+            .quote {
+                font-size: 18px;
+            }
+            
+            button {
+                font-size: 16px;
+                padding: 16px 40px;
+            }
+            
+            .quote-container {
+                padding: 30px 25px;
+            }
+        }
+        
+        @media (min-height: 700px) {
+            .quote {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="heart-container">
+        <div class="heart">💕</div>
+        <div class="heart">❤️</div>
+        <div class="heart">💖</div>
+        <div class="heart">💗</div>
+        <div class="heart">💓</div>
+        <div class="heart">💝</div>
+    </div>
+    
+    <div class="container">
+        <div class="quote-container" id="quoteContainer">
+            <div class="quote">
+                Will you let my heart know your name?<br>
+                Master your ways?<br>
+                Because these eyes have been studying you.<br>
+                And this heart knows that the path to it's tomorrow<br>
+                Only looks brighter when walking in step with you
+            </div>
+            <div class="signature">(Will you be my Valentine MaMchunu)</div>
+        </div>
+        
+        <div class="button-container" id="buttonContainer">
+            <button id="yesBtn">Yes! 💕</button>
+            <button id="noBtn">No</button>
+        </div>
+        
+        <div class="success-message" id="successMessage">
+            <h2>I knew it! ❤️</h2>
+            <p>Check your door on the 14th... I have a surprise coming.</p>
+        </div>
+    </div>
+    
+    <script>
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const buttonContainer = document.getElementById('buttonContainer');
+        const quoteContainer = document.getElementById('quoteContainer');
+        const successMessage = document.getElementById('successMessage');
+        
+        // Function to move the "No" button to a random safe position
+        function moveNoButton() {
+            const containerRect = buttonContainer.getBoundingClientRect();
+            const btnRect = noBtn.getBoundingClientRect();
+            
+            // Define safe boundaries (10% to 80% of container dimensions)
+            const minX = containerRect.width * 0.1;
+            const maxX = containerRect.width * 0.8 - btnRect.width;
+            const minY = containerRect.height * 0.1;
+            const maxY = containerRect.height * 0.8 - btnRect.height;
+            
+            // Generate random position within safe boundaries
+            const randomX = Math.random() * (maxX - minX) + minX;
+            const randomY = Math.random() * (maxY - minY) + minY;
+            
+            // Apply new position
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
+            noBtn.style.transform = 'none';
+        }
+        
+        // Use touchstart for iOS to catch the touch before any click delay
+        noBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Prevent default touch behavior
+            moveNoButton();
+        });
+        
+        // Also add click for desktop testing
+        noBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            moveNoButton();
+        });
+        
+        // Yes button - trigger confetti and show success message
+        yesBtn.addEventListener('click', () => {
+            // Hide the quote and buttons
+            quoteContainer.style.display = 'none';
+            buttonContainer.style.display = 'none';
+            
+            // Show success message
+            successMessage.style.display = 'block';
+            
+            // Massive confetti explosion
+            const duration = 5 * 1000;
+            const animationEnd = Date.now() + duration;
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 1000 };
+            
+            function randomInRange(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+            
+            const interval = setInterval(() => {
+                const timeLeft = animationEnd - Date.now();
+                
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+                
+                const particleCount = 50 * (timeLeft / duration);
+                
+                // Fire confetti from multiple points
+                confetti({
+                    ...defaults,
+                    particleCount,
+                    origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+                    colors: ['#ff6b9d', '#ffc1cc', '#ff85a1', '#ffb3c6', '#d4526e']
+                });
+                confetti({
+                    ...defaults,
+                    particleCount,
+                    origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+                    colors: ['#ff6b9d', '#ffc1cc', '#ff85a1', '#ffb3c6', '#d4526e']
+                });
+            }, 250);
+        });
+    </script>
+</body>
+</html>
